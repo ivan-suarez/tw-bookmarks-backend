@@ -88,9 +88,16 @@ const params = {
     //Makes api call
     const getBookmark = await client.bookmarks.getUsersIdBookmarks(id, params);
     
-    console.dir(getBookmark, {
-      depth: null,
-    });
+    //console.dir(getBookmark, {
+      //depth: null,
+    //});
+    console.log("printing");
+    //const bookids = getBookmark.keys.map(bk => bk.username);
+    for(const key in getBookmark.data){
+        console.log(getBookmark.data[key].text);
+    }
+   //console.log(getBookmark.data.text)
+    //console.dir(bookids, {depth:null});
     process.exit();
   } catch (error) {
     console.log(error);
