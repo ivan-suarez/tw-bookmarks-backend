@@ -1,4 +1,10 @@
 const { Client, auth } = require("twitter-api-sdk");
+const express = require("express")
+const app = express()
+const Cors = require('cors')
+const port = 8081
+
+app.use(Cors())
 
 const readline = require("readline").createInterface({
   input: process.stdin,
@@ -46,60 +52,10 @@ const params = {
   "tweet.fields": ["geo", "entities", "context_annotations"],
 };
 
-(async () => {
-  const authClient = new auth.OAuth2User({
-    client_id: CLIENT_ID,
-    client_secret: CLIENT_SECRET,
-    callback: "https://www.example.com/oauth",
-    scopes: ["tweet.read", "users.read", "bookmark.read"],
+app.get('/', (req, res) => {
+    res.send('Hello World!')
   });
-
-  const client = new Client(authClient);
-  const STATE = "my-state";
   
-  //Get authorization
-  //Step 1: Construct an Authorize URL
-  const authUrl = authClient.generateAuthURL({
-    state: STATE,
-    code_challenge: "challenge",
-  });
-
-  console.log(`Please go here and authorize:`, authUrl);
-
-  //Input users callback url in termnial
-  const redirectCallback = await input("Paste the redirected callback here: ");
-
-  try {
-    //Parse callback
-    console.log("try")
-    const { state, code } = getQueryStringParams(redirectCallback);
-    if (state !== STATE) {
-      console.log("State isn't matching");
-    }
-    //Gets access token
-    //Step 3: POST oauth2/token - Access Token
-    await authClient.requestAccessToken(code);
-
-    //Get the user ID
-    const {
-      data: { id },
-    } = await client.users.findMyUser();
-
-    //Makes api call
-    const getBookmark = await client.bookmarks.getUsersIdBookmarks(id, params);
-    
-    //console.dir(getBookmark, {
-      //depth: null,
-    //});
-    console.log("printing");
-    //const bookids = getBookmark.keys.map(bk => bk.username);
-    for(const key in getBookmark.data){
-        console.log(getBookmark.data[key].text);
-    }
-   //console.log(getBookmark.data.text)
-    //console.dir(bookids, {depth:null});
-    process.exit();
-  } catch (error) {
-    console.log(error);
-  }
-})();
+app.listen(port, () => {
+    console.log(`Example app listening on port ${port}`)
+});
