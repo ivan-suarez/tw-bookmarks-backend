@@ -42,8 +42,8 @@ async function input(prompt) {
 // To set environment variables on macOS or Linux, run the export commands below from the terminal:
 // export CLIENT_ID='YOUR-CLIENT-ID'
 // export CLIENET_SECRET='YOUR-CLIENT-SECRET'
-const CLIENT_ID = "SGJwZkR2Y3lncE1GT3FBbFB5d1Q6MTpjaQ"
-const CLIENT_SECRET = "PyayQcXMP_rLMDedtz0k8WzATg-0zfZ2jKIHj_co-EjmSkd08j";
+const CLIENT_ID = `${process.env.CLIENT_ID}`
+const CLIENT_SECRET = `${process.env.CLIENT_SECRET}`;
 
 // Optional parameters for additional payload data
 const params = {
