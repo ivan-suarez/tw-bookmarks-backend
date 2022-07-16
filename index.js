@@ -2,7 +2,7 @@ const { Client, auth } = require("twitter-api-sdk");
 const express = require("express")
 const app = express()
 const Cors = require('cors')
-const port = 8081
+const port = 8080
 const dotenv = require('dotenv')
 dotenv.config()
 
@@ -54,20 +54,24 @@ const params = {
   "tweet.fields": ["geo", "entities", "context_annotations"],
 };
 
+const authClient = new auth.OAuth2User({
+    client_id: CLIENT_ID,
+    client_secret: CLIENT_SECRET,
+    callback: "https://www.example.com/oauth",
+    scopes: ["tweet.read", "users.read", "bookmark.read"],
+});
+
+const client = new Client(authClient);
+    const STATE = "my-state";
+
 app.get('/', (req, res) => {
     res.send('Hello World!')
   });
 
 app.get('/login', (req, res) => {
-    const authClient = new auth.OAuth2User({
-        client_id: CLIENT_ID,
-        client_secret: CLIENT_SECRET,
-        callback: "https://www.example.com/oauth",
-        scopes: ["tweet.read", "users.read", "bookmark.read"],
-    });
     
-    const client = new Client(authClient);
-    const STATE = "my-state";
+    
+    
       
     //Get authorization
     //Step 1: Construct an Authorize URL
@@ -79,6 +83,26 @@ app.get('/login', (req, res) => {
     console.log(`Please go here and authorize:`, authUrl);
 
     res.send(authUrl);
+});
+
+app.post('/bookmarks/', async (req, res)=> {
+    const redirectCallback = req.body.link;
+    console.log(redirectCallback);
+    //const { state, code } = getQueryStringParams(redirectCallback);
+    //if (state !== STATE) {
+    //  console.log("State isn't matching");
+    //}
+
+    //await authClient.requestAccessToken(code);
+
+    //const {
+      //  data: { id },
+      //} = await client.users.findMyUser();
+  
+      //Makes api call
+    //const getBookmark = await client.bookmarks.getUsersIdBookmarks(id, params);
+    //res.send(getBookmark.data[0].text);
+    res.send("");
 });
   
 app.listen(port, () => {
