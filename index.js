@@ -90,9 +90,12 @@ const params = {
     //Makes api call
     const getBookmark = await client.bookmarks.getUsersIdBookmarks(id, params);
    // client.tweets.findTweetsById
-    console.dir(getBookmark, {
-      depth: null,
-    });
+   const mybookmarks = getBookmark.data.forEach(obj =>{
+      console.log(obj.text);
+   });
+    //console.dir(getBookmark, {
+     // depth: null,
+   // });
     process.exit();
   } catch (error) {
     console.log(error);
