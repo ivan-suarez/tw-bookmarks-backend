@@ -1,6 +1,8 @@
 const express = require('express');
 const { Client, auth } = require("twitter-api-sdk");
 const app = express();
+const dotenv = require('dotenv');
+dotenv.config();
 
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
