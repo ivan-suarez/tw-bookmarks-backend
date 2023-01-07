@@ -79,7 +79,8 @@ app.get('/getBookmarks', async(req, res) =>{
 
     //Makes api call
     const getBookmark = await client.bookmarks.getUsersIdBookmarks(id, params);
-    res.send(getBookmark.data);
+    const mybookmarks = getBookmark.data.map(obj => obj.text);
+    res.send(mybookmarks);
   }catch(error){
     console.log(error);
   }
