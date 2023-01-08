@@ -1,76 +1,69 @@
+const express = require('express');
 const { Client, auth } = require("twitter-api-sdk");
+const app = express();
+app.use(express.json());
 const dotenv = require('dotenv');
+const Cors = require('cors');
+app.use(Cors());
+
 dotenv.config();
 
-const readline = require("readline").createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
-
-//Helper function to parse callback
-const getQueryStringParams = (query) => {
-    console.log("getquery")
-  return query
-    ? (/^[?#]/.test(query) ? query.slice(1) : query)
-        .split(/[\?\&]/)
-        .reduce((params, param) => {
-          let [key, value] = param.split("=");
-          params[key] = value
-            ? decodeURIComponent(value.replace(/\+/g, " "))
-            : "";
-          return params;
-        }, {})
-    : {};
-};
-
-//Helper terminal input function
-async function input(prompt) {
-    console.log("async function")
-  return new Promise(async (resolve, reject) => {
-    readline.question(prompt, (out) => {
-      readline.close();
-      resolve(out);
-    });
-  });
-}
-
-// The code below sets the consumer key and consumer secret from your environment variables
-// To set environment variables on macOS or Linux, run the export commands below from the terminal:
-// export CLIENT_ID='YOUR-CLIENT-ID'
-// export CLIENET_SECRET='YOUR-CLIENT-SECRET'
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
 
-// Optional parameters for additional payload data
 const params = {
   expansions: "author_id",
   "user.fields": ["username", "created_at"],
   "tweet.fields": ["geo", "entities", "context_annotations"],
 };
 
-(async () => {
-  const authClient = new auth.OAuth2User({
-    client_id: CLIENT_ID,
-    client_secret: CLIENT_SECRET,
-    callback: "https://www.example.com/oauth",
-    scopes: ["tweet.read", "users.read", "bookmark.read"],
-  });
+const authClient = new auth.OAuth2User({
+  client_id: CLIENT_ID,
+  client_secret: CLIENT_SECRET,
+  callback: "https://www.example.com/oauth",
+  scopes: ["tweet.read", "users.read", "bookmark.read"],
+});
 
-  const client = new Client(authClient);
-  const STATE = "my-state";
+const client = new Client(authClient);
+const STATE = "my-state";
+
+
+const getQueryStringParams = (query) => {
+  console.log("getquery")
+return query
+  ? (/^[?#]/.test(query) ? query.slice(1) : query)
+      .split(/[\?\&]/)
+      .reduce((params, param) => {
+        let [key, value] = param.split("=");
+        params[key] = value
+          ? decodeURIComponent(value.replace(/\+/g, " "))
+          : "";
+        return params;
+      }, {})
+  : {};
+};
+
+app.get('/', (req, res) => res.send('Hello world'));
+app.get('/generateUrl', async(req, res) => {
+  try{
+    console.log("try");
+    
+    //Get authorization
+    //Step 1: Construct an Authorize URL
+    const authUrl = authClient.generateAuthURL({
+      state: STATE,
+      code_challenge: "challenge",
+    });
   
-  //Get authorization
-  //Step 1: Construct an Authorize URL
-  const authUrl = authClient.generateAuthURL({
-    state: STATE,
-    code_challenge: "challenge",
-  });
+    console.log(`Please go here and authorize:`, authUrl);
+    res.send(authUrl);
+  }catch(error){
+    console.log(error);
+  }
+});
 
-  console.log(`Please go here and authorize:`, authUrl);
-
-  //Input users callback url in termnial
-  const redirectCallback = await input("Paste the redirected callback here: ");
-
+app.get('/getBookmarks', async(req, res) =>{
+  const redirectCallback = req.body.url;
   try {
     //Parse callback
     console.log("try")
@@ -89,15 +82,12 @@ const params = {
 
     //Makes api call
     const getBookmark = await client.bookmarks.getUsersIdBookmarks(id, params);
-   // client.tweets.findTweetsById
-   const mybookmarks = getBookmark.data.forEach(obj =>{
-      console.log(obj.text);
-   });
-    //console.dir(getBookmark, {
-     // depth: null,
-   // });
-    process.exit();
-  } catch (error) {
+    const mybookmarks = getBookmark.data.map(obj => obj.text);
+    res.send(mybookmarks);
+  }catch(error){
     console.log(error);
   }
-})();
+  
+});
+
+app.listen('8081', () => console.log('App listening at http://localhost:8081'));
