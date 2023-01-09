@@ -62,8 +62,9 @@ app.get('/generateUrl', async(req, res) => {
   }
 });
 
-app.get('/getBookmarks', async(req, res) =>{
+app.post('/getBookmarks', async(req, res) =>{
   const redirectCallback = req.body.url;
+  console.log(req.body);
   try {
     //Parse callback
     console.log("try")
