@@ -20,7 +20,7 @@ const params = {
 const authClient = new auth.OAuth2User({
   client_id: CLIENT_ID,
   client_secret: CLIENT_SECRET,
-  callback: "https://www.example.com/oauth",
+  callback: "http://127.0.0.1:8080/bookmarks",
   scopes: ["tweet.read", "users.read", "bookmark.read"],
 });
 
@@ -63,6 +63,45 @@ app.get('/generateUrl', async(req, res) => {
 });
 
 app.post('/getBookmarks', async(req, res) =>{
+  console.log('getbookmarks');
+  //console.log(req.query.data);
+  //console.log(req.params);
+  //console.log(req.body);
+  const { state, code } = req.body.url.query;
+  console.log(state);
+  console.log(code);
+  //const state = req.state;
+  //const code = req.code;
+  try {
+    //Parse callback
+    console.log("try callback")
+    //const { state, code } = getQueryStringParams(redirectCallback);
+    if (state !== STATE) {
+      console.log("State isn't matching");
+    }
+    //Gets access token
+    //Step 3: POST oauth2/token - Access Token
+    await authClient.requestAccessToken(code);
+
+    //Get the user ID
+    const {
+      data: { id },
+    } = await client.users.findMyUser();
+
+    //Makes api call
+    const getBookmark = await client.bookmarks.getUsersIdBookmarks(id, params);
+    const mybookmarks = getBookmark.data.map(obj => obj.text);
+
+
+    res.send(mybookmarks);
+  }catch(error){
+    console.log(error);
+    res.send(error);
+  }
+});
+
+
+app.post('/getBookmarkss', async(req, res) =>{
   const redirectCallback = req.body.url;
   console.log(req.body);
   try {
