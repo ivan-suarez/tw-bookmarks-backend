@@ -7,4 +7,4 @@ docker build . -t tw-backend
 
 Start container
 
-docker run -dp 8080:8080 --env-file .env tw-backend
+docker run -dp 8081:8080 --env-file .env tw-backend
