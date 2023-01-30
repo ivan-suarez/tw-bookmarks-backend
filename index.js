@@ -10,6 +10,7 @@ dotenv.config();
 
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
+const CALLBACK = process.env.CALLBACK;
 
 const params = {
   expansions: "author_id",
@@ -20,7 +21,7 @@ const params = {
 const authClient = new auth.OAuth2User({
   client_id: CLIENT_ID,
   client_secret: CLIENT_SECRET,
-  callback: "http://127.0.0.1:8080/bookmarks",
+  callback: CALLBACK,
   scopes: ["tweet.read", "users.read", "bookmark.read"],
 });
 
